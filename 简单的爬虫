@@ -1,0 +1,82 @@
+# -*- coding: UTF-8 -*-
+"""
+Created on Sat Feb  8 15:12:09 2020
+
+@author: zhoujian
+
+"""
+
+import urllib.request
+import urllib.parse
+from bs4 import BeautifulSoup
+import ssl
+import requests
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+
+ssl._create_default_https_context = ssl._create_unverified_context
+
+# 错误处理函数
+def show_error(message):
+    print(message, end='\n\n')
+    quit()
+
+
+# 获取网页内容
+def get_html(url):
+    try:
+        return urllib.request.urlopen(url).read()
+    except Exception as err:
+        show_error("打开以下网址时出错：\n{0}\n错误信息：{1}".format(url, err))
+
+
+# 根据词条获取数据
+def get_data(keyword):
+    url = "https://baike.baidu.com/item/{0}".format(urllib.parse.quote(keyword))
+    driver=webdriver.Chrome()
+    # 获取接口中的必须参数newLemmaId
+    pop=BeautifulSoup(get_html(url), "html.parser").select(".vote-count")[0].text
+    return "{0},{1}\n".format(keyword, pop)
+
+
+# 根据分类取得数据
+def get_category_data(category, content):
+    max_count = 2 if is_debug else 3000  # 最大词条数
+
+    print("搜索分类：{0}，请稍候...".format(category))
+
+    url = "http://baike.baidu.com/fenlei/{0}?limit={0}&index=1".format(
+        urllib.parse.quote(category),
+        str(max_count))
+    # if is_debug:
+    #     url = "http://localhost:8000/baidu.html"
+    html = BeautifulSoup(get_html(url), "html.parser")
+
+    tags = html.select("a.title")
+    print("共{0}个词条".format(str(len(tags))))
+    for tag in tags[0:max_count]:
+        keyword = tag.string.strip()
+        print("检查词条[{0}]".format(keyword))
+        data=get_data(keyword)
+        content = content + data
+    return content
+
+        
+
+# 入口函数
+def main():
+    driver=webdriver.Chrome()
+    category = "当代名人"  # 百科分类
+    csv_content = "当代名人名字，点赞数\n"  # 写入的文件内容
+    csv_content = get_category_data(category, csv_content)  # 获得主分类数据
+
+    data_file = open("{0}.csv".format(category), "w")
+    data_file.write(csv_content)
+    data_file.close()
+    input("执行完毕")
+
+
+# 执行程序
+if __name__ == "__main__":
+    is_debug = False  # 测试状态
+    main()

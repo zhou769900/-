@@ -1,0 +1,75 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Sat Feb  8 11:09:30 2020
+
+@author: zhoujian
+"""
+
+import random
+import string
+import itchat
+from collections import Counter
+import matplotlib.pyplot as plt
+import time
+
+plt.rcParams['font.sans-serif'] = ['SimHei']  # 用来正常显示中文标签
+plt.rcParams['axes.unicode_minus'] = False  # 用来正常显示负号
+itchat.auto_login(hotReload = False)  # 微信登录,hotReload = True 则会记录登录结果，下次会自动登录
+friends = itchat.get_friends(update = True)
+groups = itchat.get_chatrooms(update=True)
+
+    
+def robot(name):
+    list=[0,1,2,3,4,5,6,7,8]
+    person = itchat.search_friends(name)
+    pername=person[0]['UserName']
+    if is_bug:
+        for i in list:
+             time.sleep(2)
+             huayu=['元宵节快乐', '大吉大利','万事如意','祝土豆越来越好看','小宝越来越聪明啊哈哈']
+             result=random.choice(huayu)
+             itchat.send(result,pername)
+        return
+    else :
+         for i in list:
+             time.sleep(600)
+             huayu=['元宵节快乐', '大吉大利','万事如意','祝土豆越来越好看','小宝越来越聪明啊哈哈']
+             result=random.choice(huayu)
+             itchat.send(result,pername)
+         return 
+       
+        
+    
+def roboter(name):
+    list=[0,1,2,3,4,5,6,7,8]
+    iRoom = itchat.search_chatrooms(name)
+    g=iRoom[0]['UserName']
+    if is_bug:
+        for i in list:
+             time.sleep(2)
+             huayu=['元宵节快乐', '大吉大利','万事如意','祝土豆越来越好看','小宝越来越聪明啊哈哈']
+             result=random.choice(huayu)
+             itchat.send(result,g)
+        return
+    else :
+         for i in list:
+             time.sleep(2)
+             huayu=['元宵节快乐', '大吉大利','万事如意','祝土豆越来越好看','小宝越来越聪明啊哈哈']
+             result=random.choice(huayu)
+             itchat.send(result,g)
+         return 
+# 执行程序
+if __name__ == "__main__":
+    result=input('是否选择测试，请输入True或者是False:')
+    is_bug=result
+    choice=input('你选择群聊还是个人:')
+    if choice=='个人':
+        for friend in friends:
+            print(friend['NickName'])
+        name=input('输入你想要发送信息的用户名称：')
+        robot(name)
+    else:
+       for group in groups:
+            print(group['NickName'])
+       name=input('输入你想要发送信息的群聊名称：')
+       roboter(name)
